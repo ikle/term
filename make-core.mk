@@ -104,7 +104,7 @@ clean-static:
 ifneq ($(TESTS),)
 
 %-test: %-test.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 .PHONY: build-test clean-tests
 
