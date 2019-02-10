@@ -18,6 +18,15 @@ SBINDIR	?= $(PREFIX)/sbin
 DESTDIR	?=
 
 #
+# target dependencies
+#
+
+ifneq ($(DEPENDS),)
+CFLAGS	+= `pkg-config $(DEPENDS) --cflags`
+LDFLAGS	+= `pkg-config $(DEPENDS) --libs`
+endif
+
+#
 # guarantie default target
 #
 
