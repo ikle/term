@@ -83,6 +83,9 @@ $(PCFILE):
 	@test -n "$(URL)" && echo "URL: $(URL)"		>> $@
 	@echo "Name: $(LIBNAME)"			>> $@
 	@echo "Version: $(LIBVER).$(LIBREV)"		>> $@
+ifneq ($(DEPENDS),)
+	@echo "Requires: $(DEPENDS)"			>> $@
+endif
 	@echo "Libs: -l$(LIBNAME)"			>> $@
 	@echo "Cflags: -I$(INCROOT)"			>> $@
 
