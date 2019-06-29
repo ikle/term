@@ -39,11 +39,11 @@ all:
 #
 
 HEADERS	= $(wildcard include/*.h include/*/*.h)
-SOURCES	= $(filter-out %-test.c %-main.c %-service.c, $(wildcard *.c))
+SOURCES	= $(filter-out %-test.c %-tool.c %-service.c, $(wildcard *.c))
 OBJECTS	= $(patsubst %.c,%.o, $(SOURCES))
 
 TESTS	= $(patsubst %-test.c,%-test, $(wildcard *-test.c))
-TOOLS	= $(patsubst %-main.c,%, $(wildcard *-main.c))
+TOOLS	= $(patsubst %-tool.c,%, $(wildcard *-tool.c))
 SERVICES = $(patsubst %-service.c,%, $(wildcard *-service.c))
 
 #
@@ -138,7 +138,7 @@ endif  # build TESTS
 
 ifneq ($(TOOLS),)
 
-%: %-main.c
+%: %-tool.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 .PHONY: build-tools clean-tools install-tools
