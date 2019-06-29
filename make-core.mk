@@ -139,7 +139,7 @@ endif  # build TESTS
 ifneq ($(TOOLS),)
 
 %: %-tool.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 .PHONY: build-tools clean-tools install-tools
 
@@ -166,7 +166,7 @@ endif  # build TOOLS
 ifneq ($(SERVICES),)
 
 %: %-service.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 .PHONY: build-services clean-services install-services
 
