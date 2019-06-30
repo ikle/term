@@ -155,7 +155,7 @@ clean-tools:
 
 install-tools: build-tools
 	install -d $(DESTDIR)$(BINDIR)
-	install -m 755 $(TOOLS) $(DESTDIR)$(BINDIR)
+	install -s -m 755 $(TOOLS) $(DESTDIR)$(BINDIR)
 
 endif  # build TOOLS
 
@@ -182,6 +182,6 @@ clean-services:
 
 install-services: build-services
 	install -d $(DESTDIR)$(SBINDIR)
-	install -m 755 $(SERVICES) $(DESTDIR)$(SBINDIR)
+	install -s -m 755 $(SERVICES) $(DESTDIR)$(SBINDIR)
 
 endif  # build SERVICES
