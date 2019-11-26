@@ -86,7 +86,9 @@ static void csi_filter (int in, int out)
 				break;
 			}
 
-		if (safe_write (out, obuf, n = (q - obuf)) != n)
+		n = q - obuf;
+
+		if (safe_write (out, obuf, n) != n)
 			break;
 	}
 }
