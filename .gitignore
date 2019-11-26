@@ -1,0 +1,7 @@
+*.o
+*.a
+*.so.*
+*.pc
+*.swp
+*-test
+term-filter

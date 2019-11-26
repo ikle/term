@@ -1,0 +1,175 @@
+#
+# Generic make helpers
+#
+# Copyright (c) 2006-2019 Alexei A. Smekalkine <ikle@ikle.ru>
+#
+# SPDX-License-Identifier: BSD-2-Clause
+#
+
+#
+# target paths
+#
+
+PREFIX	?= /usr
+INCDIR	?= $(PREFIX)/include
+LIBDIR	?= $(PREFIX)/lib/$(MULTIARCH)
+BINDIR	?= $(PREFIX)/bin
+SBINDIR	?= $(PREFIX)/sbin
+DESTDIR	?=
+
+#
+# guarantie default target
+#
+
+.PHONY: all clean install
+
+all:
+
+#
+# source and target file filters
+#
+
+HEADERS	= $(wildcard include/*.h include/*/*.h)
+SOURCES	= $(filter-out %-test.c %-main.c %-service.c, $(wildcard *.c))
+OBJECTS	= $(patsubst %.c,%.o, $(SOURCES))
+
+TESTS	= $(patsubst %-test.c,%-test, $(wildcard *-test.c))
+TOOLS	= $(patsubst %-main.c,%, $(wildcard *-main.c))
+SERVICES = $(patsubst %-service.c,%, $(wildcard *-service.c))
+
+#
+# rules to manage static libraries
+#
+
+%.a:
+	$(AR) -rc $@ $^
+
+.PHONY: install-headers
+.PHONY: build-static clean-static install-static
+
+ifdef LIBNAME
+
+AFILE	= lib$(LIBNAME).a
+LIBVER	?= 0
+LIBREV	?= 0.1
+PCFILE	= $(LIBNAME).pc
+
+install: install-headers
+
+INCROOT	= $(INCDIR)/$(LIBNAME)-$(LIBVER)
+
+define install-header
+install-headers:: ; install -Dm 644 $(1) $(DESTDIR)$(INCROOT)/$(1:include/%=%)
+endef
+
+$(foreach F,$(HEADERS),$(eval $(call install-header,$(F))))
+
+all:     build-static
+install: install-static
+
+$(OBJECTS): CFLAGS += -I$(CURDIR)/include
+
+$(PCFILE):
+	@test -n "$(DESCRIPTION)" && echo "Description: $(DESCRIPTION)"	>  $@
+	@test -n "$(URL)" && echo "URL: $(URL)"		>> $@
+	@echo "Name: $(LIBNAME)"			>> $@
+	@echo "Version: $(LIBVER).$(LIBREV)"		>> $@
+	@echo "Libs: -l$(LIBNAME)"			>> $@
+	@echo "Cflags: -I$(INCROOT)"			>> $@
+
+install-static: $(AFILE) $(PCFILE)
+	install -d $(DESTDIR)$(LIBDIR)/pkgconfig
+	install -m 644 $(AFILE) $(DESTDIR)$(LIBDIR)
+	install -m 644 $(PCFILE) $(DESTDIR)$(LIBDIR)/pkgconfig
+
+else  # not defined LIBNAME
+
+AFILE	= bundle.a
+
+endif  # LIBNAME
+
+$(AFILE): $(OBJECTS)
+
+build-static: $(AFILE)
+
+clean: clean-static
+
+clean-static:
+	$(RM) $(AFILE) $(OBJECTS) $(PCFILE)
+
+#
+# rules to manage tests (ordinary programs)
+#
+
+ifneq ($(TESTS),)
+
+%-test: %-test.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+.PHONY: build-test clean-tests
+
+all:     build-tests
+clean:   clean-tests
+
+$(TESTS): CFLAGS += -I$(CURDIR)/include
+$(TESTS): $(AFILE)
+
+build-tests: $(TESTS)
+clean-tests:
+	$(RM) $(TESTS)
+
+endif  # build TESTS
+
+#
+# rules to manage tools (ordinary programs)
+#
+
+ifneq ($(TOOLS),)
+
+%: %-main.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+.PHONY: build-tools clean-tools install-tools
+
+all:     build-tools
+clean:   clean-tools
+install: install-tools
+
+$(TOOLS): $(AFILE)
+
+build-tools: $(TOOLS)
+clean-tools:
+	$(RM) $(TOOLS)
+
+install-tools: build-tools
+	install -d $(DESTDIR)$(BINDIR)
+	install -m 755 $(TOOLS) $(DESTDIR)$(BINDIR)
+
+endif  # build TOOLS
+
+#
+# rules to manage services (system programs)
+#
+
+ifneq ($(SERVICES),)
+
+%: %-service.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+.PHONY: build-services clean-services install-services
+
+all:     build-services
+clean:   clean-services
+install: install-services
+
+$(SERVICES): $(AFILE)
+
+build-services: $(SERVICES)
+clean-services:
+	$(RM) $(SERVICES)
+
+install-services: build-services
+	install -d $(DESTDIR)$(SBINDIR)
+	install -m 755 $(SERVICES) $(DESTDIR)$(SBINDIR)
+
+endif  # build SERVICES
