@@ -153,7 +153,7 @@ static int csi_filter_proc (void *data)
 int main (int argc, char *argv[])
 {
 	pid_t child;
-	int master, i, status = 1;
+	int master, status = 1;
 
 	struct termios to, tn;
 
