@@ -147,6 +147,7 @@ all:     build-tools
 clean:   clean-tools
 install: install-tools
 
+$(TOOLS): CFLAGS += -I$(CURDIR)/include
 $(TOOLS): $(AFILE)
 
 build-tools: $(TOOLS)
@@ -174,6 +175,7 @@ all:     build-services
 clean:   clean-services
 install: install-services
 
+$(SERVICES): CFLAGS += -I$(CURDIR)/include
 $(SERVICES): $(AFILE)
 
 build-services: $(SERVICES)
