@@ -114,7 +114,7 @@ static inline int mtx_init (mtx_t *o, int type)
 	pthread_mutexattr_destroy (&a);
 
 	return ret == 0 ? thrd_success :
-	       ret == ENOMEM ? thrd_timedout : thrd_error;
+	       ret == ENOMEM ? thrd_nomem : thrd_error;
 }
 
 static inline int mtx_lock (mtx_t *o)
