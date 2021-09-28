@@ -1,3 +1,11 @@
+/*
+ * C11 Threads API
+ *
+ * Copyright (c) 2019-2021 Alexei A. Smekalkine <ikle@ikle.ru>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #ifndef C11_THREADS_H
 #define C11_THREADS_H  1
 
