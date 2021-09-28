@@ -70,7 +70,7 @@ static inline int cnd_init (cnd_t *o)
 	int ret = pthread_cond_init (o, NULL);
 
 	return ret == 0 ? thrd_success :
-	       ret == ENOMEM ? thrd_timedout : thrd_error;
+	       ret == ENOMEM ? thrd_nomem : thrd_error;
 }
 
 static inline int cnd_signal (cnd_t *o)
@@ -85,7 +85,7 @@ int cnd_timedwait (cnd_t *restrict o, mtx_t *restrict m,
 	int ret = pthread_cond_timedwait (o, m, timeout);
 
 	return ret == 0 ? thrd_success :
-	       ret == ETIMEDOUT ? thrd_nomem : thrd_error;
+	       ret == ETIMEDOUT ? thrd_timedout : thrd_error;
 }
 
 static inline int cnd_wait (cnd_t *restrict o, mtx_t *restrict m)
