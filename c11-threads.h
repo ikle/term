@@ -96,9 +96,9 @@ int cnd_timedwait (cnd_t *restrict o, mtx_t *restrict m,
 /* C11 7.25.4 Mutex functions */
 
 enum mtx {
-	mtx_plain,
-	mtx_recursive,
-	mtx_timed
+	mtx_plain	= 0,
+	mtx_recursive	= 1,
+	mtx_timed	= 2,
 };
 
 static inline int mtx_init (mtx_t *o, int type)
