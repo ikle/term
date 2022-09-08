@@ -101,11 +101,6 @@ enum mtx {
 	mtx_timed
 };
 
-static inline void mtx_destroy (mtx_t *o)
-{
-	pthread_mutex_destroy (o);
-}
-
 static inline int mtx_init (mtx_t *o, int type)
 {
 	pthread_mutexattr_t a;
@@ -123,6 +118,11 @@ static inline int mtx_init (mtx_t *o, int type)
 
 	return ret == 0 ? thrd_success :
 	       ret == ENOMEM ? thrd_nomem : thrd_error;
+}
+
+static inline void mtx_destroy (mtx_t *o)
+{
+	pthread_mutex_destroy (o);
 }
 
 static inline int mtx_lock (mtx_t *o)
