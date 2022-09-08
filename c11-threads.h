@@ -31,11 +31,11 @@
 #endif
 
 enum thrd_status {
-	thrd_success,
-	thrd_nomem,
-	thrd_timedout,
-	thrd_busy,
-	thrd_error
+	thrd_success	= 0,
+	thrd_busy	= 1,
+	thrd_error	= 2,
+	thrd_nomem	= 3,
+	thrd_timedout	= 4,
 };
 
 typedef pthread_once_t	once_flag;
