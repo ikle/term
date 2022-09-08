@@ -106,15 +106,16 @@ static inline int mtx_init (mtx_t *o, int type)
 	pthread_mutexattr_t a;
 	int ret;
 
-	if (pthread_mutexattr_init (&a) != 0)
-		return thrd_nomem;
+	if ((type & mtx_recursive) != 0) {
+		if (pthread_mutexattr_init (&a) != 0)
+			return thrd_nomem;
 
-	type = (type & mtx_recursive) != 0 ? PTHREAD_MUTEX_RECURSIVE :
-					     PTHREAD_MUTEX_DEFAULT;
-	pthread_mutexattr_settype (&a, type);
-
-	ret = pthread_mutex_init (o, &a);
-	pthread_mutexattr_destroy (&a);
+		pthread_mutexattr_settype (&a, PTHREAD_MUTEX_RECURSIVE);
+		ret = pthread_mutex_init (o, &a);
+		pthread_mutexattr_destroy (&a);
+	}
+	else
+		ret = pthread_mutex_init (o, NULL);
 
 	return ret == 0 ? thrd_success :
 	       ret == ENOMEM ? thrd_nomem : thrd_error;
