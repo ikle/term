@@ -55,16 +55,6 @@ static inline void call_once (once_flag *o, void (*fn) (void))
 
 /* C11 7.25.3 Condition variable functions */
 
-static inline int cnd_broadcast (cnd_t *o)
-{
-	return pthread_cond_broadcast (o) == 0 ? thrd_success : thrd_error;
-}
-
-static inline void cnd_destroy (cnd_t *o)
-{
-	(void) pthread_cond_destroy (o);
-}
-
 static inline int cnd_init (cnd_t *o)
 {
 	int ret = pthread_cond_init (o, NULL);
@@ -73,9 +63,24 @@ static inline int cnd_init (cnd_t *o)
 	       ret == ENOMEM ? thrd_nomem : thrd_error;
 }
 
+static inline void cnd_destroy (cnd_t *o)
+{
+	(void) pthread_cond_destroy (o);
+}
+
 static inline int cnd_signal (cnd_t *o)
 {
 	return pthread_cond_signal (o) == 0 ? thrd_success : thrd_error;
+}
+
+static inline int cnd_broadcast (cnd_t *o)
+{
+	return pthread_cond_broadcast (o) == 0 ? thrd_success : thrd_error;
+}
+
+static inline int cnd_wait (cnd_t *restrict o, mtx_t *restrict m)
+{
+	return pthread_cond_wait (o, m) == 0 ? thrd_success : thrd_error;
 }
 
 static inline
@@ -86,11 +91,6 @@ int cnd_timedwait (cnd_t *restrict o, mtx_t *restrict m,
 
 	return ret == 0 ? thrd_success :
 	       ret == ETIMEDOUT ? thrd_timedout : thrd_error;
-}
-
-static inline int cnd_wait (cnd_t *restrict o, mtx_t *restrict m)
-{
-	return pthread_cond_wait (o, m) == 0 ? thrd_success : thrd_error;
 }
 
 /* C11 7.25.4 Mutex functions */
