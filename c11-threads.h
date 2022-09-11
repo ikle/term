@@ -199,7 +199,7 @@ int thrd_sleep (const struct timespec *req, struct timespec *rem)
 	return nanosleep (req, rem);
 }
 
-static inline void thrd_yield(void)
+static inline void thrd_yield (void)
 {
 	(void) sched_yield ();
 }
