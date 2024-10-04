@@ -1,7 +1,7 @@
 /*
  * C11 Threads API
  *
- * Copyright (c) 2019-2021 Alexei A. Smekalkine <ikle@ikle.ru>
+ * Copyright (c) 2019-2024 Alexei A. Smekalkine <ikle@ikle.ru>
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -9,22 +9,41 @@
 #ifndef C11_THREADS_H
 #define C11_THREADS_H  1
 
+/*
+ * Mac OS X and iOS are unixes really
+ */
+#if !defined (__unix__) && defined (__APPLE__) && defined (__MACH__)
+#define __unix__
+#endif
+
+/*
+ * Get POSIX macroses
+ */
+#if defined (unix) || defined (__unix__) || defined (__unix)
+#include <unistd.h>
+#endif
+
 #if __STDC_VERSION__ >= 201112L && !defined (__STDC_NO_THREADS__)
+
+/*
+ * Use native C11 Threads
+ */
 
 #include <threads.h>
 
-#elif _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
+#elif defined (_POSIX_THREADS) || defined (HAVE_PTHREAD_H)
 
 /*
  * Implementation via POSIX Threads
- *
- * CFLAGS += -pthread -D_XOPEN_SOURCE=600
  */
 
 #include <errno.h>
 #include <pthread.h>
-#include <sched.h>
 #include <time.h>
+
+#if defined (_POSIX_PRIORITY_SCHEDULING) || defined (HAVE_SCHED_YIELD)
+#include <sched.h>
+#endif
 
 #if __STDC_VERSION__ < 199901L
 #define restrict
@@ -196,12 +215,18 @@ static inline int thrd_join (thrd_t o, int *res)
 static inline
 int thrd_sleep (const struct timespec *req, struct timespec *rem)
 {
+#if defined (_POSIX_TIMERS) || defined (HAVE_NANOSLEEP)
 	return nanosleep (req, rem);
+#else
+#error "Does not know how to sleep"
+#endif
 }
 
 static inline void thrd_yield (void)
 {
+#if defined (_POSIX_PRIORITY_SCHEDULING) || defined (HAVE_SCHED_YIELD)
 	(void) sched_yield ();
+#endif
 }
 
 /* C11 Thread-specific storage functions */
